@@ -90,6 +90,9 @@ fi
 systemctl enable docker
 systemctl start docker
 
+mkdir -p /etc/origin/master/
+touch /etc/origin/master/htpasswd
+
 # Create Storage Class yml files on MASTER-0
 
 if hostname -f|grep -- "-0" >/dev/null
