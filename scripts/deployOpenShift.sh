@@ -50,10 +50,6 @@ sed -i -e "s/^#host_key_checking = False/host_key_checking = False/" /etc/ansibl
 sed -i -e "s/^#pty=False/pty=False/" /etc/ansible/ansible.cfg
 sed -i -e "s/^#stdout_callback = skippy/stdout_callback = skippy/" /etc/ansible/ansible.cfg
 
-mkdir -p /etc/origin/master/
-touch /etc/origin/master/htpasswd
-htpasswd -b /etc/origin/master/htpasswd $SUDOUSER ${PASSWORD}
-
 # Cloning Ansible playbook repository
 ((cd /home/$SUDOUSER && git clone https://github.com/Microsoft/openshift-container-platform-playbooks.git) || (cd openshift-container-platform-playbooks && git pull))
 if [ -d /home/${SUDOUSER}/openshift-container-platform-playbooks ]
@@ -179,7 +175,6 @@ openshift_master_cluster_public_vip=$MASTERPUBLICIPADDRESS
 # Enable HTPasswdPasswordIdentityProvider
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
 openshift_master_htpasswd_file='/etc/origin/master/htpasswd'
-
 # Disable service catalog - Install after cluster is up if Azure Cloud Provider is enabled
 openshift_enable_service_catalog=false
 
