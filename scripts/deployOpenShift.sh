@@ -54,8 +54,10 @@ sed -i -e "s/^#stdout_callback = skippy/stdout_callback = skippy/" /etc/ansible/
 
 # Cloning Ansible playbook repository
 if [ -d /home/${SUDOUSER}/openshift-container-platform-playbooks ]; then
+	echo $(date) "- Pulling playbok"
 	((cd /home/$SUDOUSER/openshift-container-platform-playbooks && git pull))
 else
+	echo $(date) "- Clonning playbok"
 	((cd /home/$SUDOUSER && git clone https://github.com/Microsoft/openshift-container-platform-playbooks.git) || (cd openshift-container-platform-playbooks && git pull))
 fi
 
