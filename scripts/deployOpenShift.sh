@@ -40,15 +40,15 @@ export NODELOOP=$((NODECOUNT - 1))
 # Generate private keys for use by Ansible
 echo $(date) " - Generating Private keys for use by Ansible for OpenShift Installation"
 
-runuser -l $SUDOUSER -c "echo \"$PRIVATEKEY\" > ~/.ssh/id_rsa"
-runuser -l $SUDOUSER -c "chmod 600 ~/.ssh/id_rsa*"
+# runuser -l $SUDOUSER -c "echo \"$PRIVATEKEY\" > ~/.ssh/id_rsa"
+# runuser -l $SUDOUSER -c "chmod 600 ~/.ssh/id_rsa*"
 
-echo $(date) "- Configuring SSH ControlPath to use shorter path name"
+# echo $(date) "- Configuring SSH ControlPath to use shorter path name"
 
-sed -i -e "s/^# control_path = %(directory)s\/%%h-%%r/control_path = %(directory)s\/%%h-%%r/" /etc/ansible/ansible.cfg
-sed -i -e "s/^#host_key_checking = False/host_key_checking = False/" /etc/ansible/ansible.cfg
-sed -i -e "s/^#pty=False/pty=False/" /etc/ansible/ansible.cfg
-sed -i -e "s/^#stdout_callback = skippy/stdout_callback = skippy/" /etc/ansible/ansible.cfg
+# sed -i -e "s/^# control_path = %(directory)s\/%%h-%%r/control_path = %(directory)s\/%%h-%%r/" /etc/ansible/ansible.cfg
+# sed -i -e "s/^#host_key_checking = False/host_key_checking = False/" /etc/ansible/ansible.cfg
+# sed -i -e "s/^#pty=False/pty=False/" /etc/ansible/ansible.cfg
+# sed -i -e "s/^#stdout_callback = skippy/stdout_callback = skippy/" /etc/ansible/ansible.cfg
 
 # Cloning Ansible playbook repository
 ((cd /home/$SUDOUSER && git clone https://github.com/Microsoft/openshift-container-platform-playbooks.git) || (cd openshift-container-platform-playbooks && git pull))
