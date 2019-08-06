@@ -174,7 +174,7 @@ openshift_disable_check=disk_availability,memory_availability,docker_image_avail
 $CLOUDKIND
 
 # OLM
-openshift_additional_registry_credentials=[{'host':'registry.connect.redhat.com','user':'{{ jaroslavmajera }}','password':'{{ $PASSWORD }}','test_image':'mongodb/enterprise-operator:0.3.2'}]
+openshift_additional_registry_credentials=[{'host':'registry.connect.redhat.com','user':'jaroslavmajera','password':'$PASSWORD','test_image':'mongodb/enterprise-operator:0.3.2'}]
 
 # default selectors for router and registry services
 openshift_router_selector='node-role.kubernetes.io/infra=true'
