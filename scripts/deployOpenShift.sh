@@ -173,6 +173,18 @@ osm_default_node_selector='region=app'
 openshift_disable_check=disk_availability,memory_availability,docker_image_availability
 $CLOUDKIND
 
+# OLM
+openshift_enable_olm=true
+
+# Registry Service Accounts
+# https://access.redhat.com/terms-based-registry/
+oreg_auth_user='6340056|LSanches'
+oreg_auth_password='eyJhbGciOiJSUzUxMiJ9.eyJzdWIiOiIyZmRhNDNkZjdhZDY0MzUyYTkwZmU0MmYzNDgzMjNmZSJ9.Y6wSUMx_sCwT4KAcNLLi1c199jGR75NnOdxCBWzw6q3ViOjqTZMEqL8J6B_TQeiRfoEKXoDbxUsseSt0ovEwHAQU-RoG67LHDvHr5UBQ_k6ZHWl9iSeERkme46uB2_F3-9-Edr7m681QH7jcv9jGXZze_ip0Xmh_lNcpAu8-QwQ-oOi3j7c10_jbQ0RVcWyOg76yfYqpsJWl-78-Hf1R5o9iTRcZEoJHN-7Wd6Jv5hCy04n3EjZqry2ueuObTKFeiKdrlrKMCyoUTAUtfgkmuIOTFUbRsv1j0K9Y0-GEmaTN_pTXB2pLtQWxly1cWr5J3Ma7N5HnjdFfueCFrRpcQy9DWkpvlZT4UZuCZre91IDS6mIRu9rQlFiDXb70yKSr_QcqBBBxpI45nrYbn0qAhYAZ7ribVlMNX55Vmx3lSG4SpA1wP3O7oU4ZAJq-E9O77Pl-VxJpSQNSPIA3fpD7b09rypf9RIGdRafGy0cpBwV-3rJIxJ7ADhuQ9y_72hkI8gtM4XyyUab_-tpVRaD1_qhFnvDiL1yO3Wlf-VKfvA9TNvF376UZnmnZ0B5mEXmPGUrDAlNiRw8hZ3iiRl_MqA0u-XV61zTvMVOM1x_uCRc_WLeVppuNlenwjT8Vp5GBnqjm4bEuDKdqXPw_AocIitdfLnbrvOEpMebN5r3kNSI'
+
+openshift_additional_registry_credentials=[{'host':'registry.connect.redhat.com','user':'{{ oreg_auth_user }}','password':'{{ oreg_auth_password }}','test_image':'mongodb/enterprise-operator:0.3.2'}]
+
+# OLM END
+
 # default selectors for router and registry services
 openshift_router_selector='node-role.kubernetes.io/infra=true'
 openshift_registry_selector='node-role.kubernetes.io/infra=true'
@@ -387,6 +399,13 @@ then
 	   exit 12
 	fi
 fi
+
+# Configure OLM
+
+echo $(date) "- Deploying OLM"
+
+runuser -l $SUDOUSER -c "ansible-playbook /home/$SUDOUSER/openshift-ansible/playbooks/updates/registry_auth.yml"
+runuser -l $SUDOUSER -c "ansible-playbook /home/$SUDOUSER/openshift-ansible/playbooks/olm/config.yml"
 
 # Delete yaml files
 echo $(date) "- Deleting unecessary files"
