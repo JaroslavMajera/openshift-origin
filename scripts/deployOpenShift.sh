@@ -355,7 +355,9 @@ echo $(date) "- Deploying OLM"
 
 if [ $ENABLEOLM == "true" ]
 then
+	echo $(date) "- Adding registry"
 	runuser -l $SUDOUSER -c "ansible-playbook /home/$SUDOUSER/openshift-ansible/playbooks/updates/registry_auth.yml"
+	echo $(date) "- Adding OLM"
 	runuser -l $SUDOUSER -c "ansible-playbook /home/$SUDOUSER/openshift-ansible/playbooks/olm/config.yml"
 fi
 
