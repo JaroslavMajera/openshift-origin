@@ -349,6 +349,16 @@ then
 	
 fi
 
+# Configure OLM
+
+echo $(date) "- Deploying OLM"
+
+if [ $ENABLEOLM == "true" ]
+then
+	runuser -l $SUDOUSER -c "ansible-playbook /home/$SUDOUSER/openshift-ansible/playbooks/updates/registry_auth.yml"
+	runuser -l $SUDOUSER -c "ansible-playbook /home/$SUDOUSER/openshift-ansible/playbooks/olm/config.yml"
+fi
+
 # Configure Metrics
 
 if [ $METRICS == "true" ]
@@ -391,16 +401,6 @@ then
 	   echo $(date) "- Logging configuration failed"
 	   exit 12
 	fi
-fi
-
-# Configure OLM
-
-echo $(date) "- Deploying OLM"
-
-if [ $ENABLEOLM == "true" ]
-then
-	runuser -l $SUDOUSER -c "ansible-playbook /home/$SUDOUSER/openshift-ansible/playbooks/updates/registry_auth.yml"
-	runuser -l $SUDOUSER -c "ansible-playbook /home/$SUDOUSER/openshift-ansible/playbooks/olm/config.yml"
 fi
 
 # Delete yaml files
