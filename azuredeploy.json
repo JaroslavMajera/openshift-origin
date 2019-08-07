@@ -158,12 +158,14 @@
 		},
 		"redhatUsername": {
 			"type": "string",
+			"defaultValue": "",
 			"metadata": {
 				"description": "Username for RedHat"
 			}
 		},
 		"redhatPassword": {
 			"type": "securestring",
+			"defaultValue": "",
 			"metadata": {
 				"description": "Password for RedHat"
 			}
