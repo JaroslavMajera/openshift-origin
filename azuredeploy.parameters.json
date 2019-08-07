@@ -44,6 +44,15 @@
     "enableLogging": {
       "value": "false"
     },
+    "enableOlm": {
+      "value": "false"
+    },
+    "redhatUsername": {
+      "value": "changeme"
+    },
+    "redhatPassword": {
+      "value": "changeme"
+    },
     "sshPublicKey": {
       "value": "changeme"
     },

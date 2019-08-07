@@ -28,6 +28,9 @@ export METRICS=${21}
 export LOGGING=${22}
 export AZURE=${23}
 export STORAGEKIND=${24}
+export ENABLEOLM=${25}
+export REDHATUSERNAME=${26}
+export REDHATPASSWORD=${27}
 
 # Determine if Commercial Azure or Azure Government
 CLOUD=$( curl -H Metadata:true "http://169.254.169.254/metadata/instance/compute/location?api-version=2017-04-02&format=text" | cut -c 1-2 )
@@ -169,12 +172,11 @@ openshift_override_hostname_check=true
 os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
 openshift_master_api_port=443
 openshift_master_console_port=443
-osm_default_node_selector='region=app'
 openshift_disable_check=disk_availability,memory_availability,docker_image_availability
 $CLOUDKIND
 
 # OLM
-openshift_additional_registry_credentials=[{'host':'registry.connect.redhat.com','user':'jaroslavmajera','password':'$PASSWORD','test_image':'mongodb/enterprise-operator:0.3.2'}]
+openshift_additional_registry_credentials=[{'host':'registry.connect.redhat.com','user':'$REDHATUSERNAME','password':'$REDHATPASSWORD','test_image':'mongodb/enterprise-operator:0.3.2'}]
 
 # default selectors for router and registry services
 openshift_router_selector='node-role.kubernetes.io/infra=true'
@@ -395,8 +397,11 @@ fi
 
 echo $(date) "- Deploying OLM"
 
-runuser -l $SUDOUSER -c "ansible-playbook /home/$SUDOUSER/openshift-ansible/playbooks/updates/registry_auth.yml"
-runuser -l $SUDOUSER -c "ansible-playbook /home/$SUDOUSER/openshift-ansible/playbooks/olm/config.yml"
+if [ $ENABLEOLM == "true" ]
+then
+	runuser -l $SUDOUSER -c "ansible-playbook /home/$SUDOUSER/openshift-ansible/playbooks/updates/registry_auth.yml"
+	runuser -l $SUDOUSER -c "ansible-playbook /home/$SUDOUSER/openshift-ansible/playbooks/olm/config.yml"
+fi
 
 # Delete yaml files
 echo $(date) "- Deleting unecessary files"

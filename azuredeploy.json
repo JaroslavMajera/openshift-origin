@@ -146,6 +146,28 @@
 				"description": "Password for OpenShift user to login to OpenShift Console"
 			}
 		},
+		"enableOlm": {
+			"type": "string",
+			"defaultValue": "false",
+			"allowedValues": [
+				"true", "false"
+			],
+			"metadata": {
+				"description": "Enable Operator Lifecycle Manager: true or false"
+			}
+		},
+		"redhatUsername": {
+			"type": "string",
+			"metadata": {
+				"description": "Username for RedHat"
+			}
+		},
+		"redhatPassword": {
+			"type": "securestring",
+			"metadata": {
+				"description": "Password for RedHat"
+			}
+		},
 		"sshPublicKey": {
 			"type": "string",
 			"metadata": {
@@ -1620,6 +1642,15 @@
 					},
 					"openshiftPassword": {
 						"value": "[parameters('openshiftPassword')]"
+					},
+					"enableOlm": {
+						"value": "[parameters('enableOlm')]"
+					},
+					"redhatUsername": {
+						"value": "[parameters('redhatUsername')]"
+					},
+					"redhatPassword": {
+						"value": "[parameters('redhatPassword')]"
 					},
 					"enableMetrics": {
 						"value": "[parameters('enableMetrics')]"
