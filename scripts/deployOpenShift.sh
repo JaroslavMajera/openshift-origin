@@ -146,6 +146,12 @@ osm_api_server_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/origin/
 openshift_node_kubelet_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/origin/cloudprovider/azure.conf'], 'enable-controller-attach-detach': ['true']}"
 fi
 
+# Setting the aditional registry for OLM
+if [ $ENABLEOLM == "true" ]
+then
+	export OLM="openshift_additional_registry_credentials=[{'host':'registry.connect.redhat.com','user':'$REDHATUSERNAME','password':'$REDHATPASSWORD','test_image':'mongodb/enterprise-operator:0.3.2'}]"
+fi
+
 # Create Ansible Hosts File
 echo $(date) " - Create Ansible Hosts file"
 
@@ -175,8 +181,7 @@ openshift_master_console_port=443
 openshift_disable_check=disk_availability,memory_availability,docker_image_availability
 $CLOUDKIND
 
-# OLM
-openshift_additional_registry_credentials=[{'host':'registry.connect.redhat.com','user':'$REDHATUSERNAME','password':'$REDHATPASSWORD','test_image':'mongodb/enterprise-operator:0.3.2'}]
+$OLM
 
 # default selectors for router and registry services
 openshift_router_selector='node-role.kubernetes.io/infra=true'
@@ -398,11 +403,7 @@ echo $(date) "- Deploying OLM"
 
 if [ $ENABLEOLM == "true" ]
 then
-	echo $(date) "- Adding registry"
-	sleep 60
-	runuser -l $SUDOUSER -c "ansible-playbook /home/$SUDOUSER/openshift-ansible/playbooks/updates/registry_auth.yml"
-	echo $(date) "- Adding OLM"
-	sleep 60
+	sleep 30
 	runuser -l $SUDOUSER -c "ansible-playbook /home/$SUDOUSER/openshift-ansible/playbooks/olm/config.yml"
 fi
 
