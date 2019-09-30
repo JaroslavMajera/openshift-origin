@@ -92,35 +92,35 @@ systemctl start docker
 
 # Create Storage Class yml files on MASTER-0
 
-if hostname -f|grep -- "-0" >/dev/null
-then
-cat <<EOF > /home/${SUDOUSER}/scunmanaged.yml
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: generic
-  annotations:
-    storageclass.kubernetes.io/is-default-class: "true"
-provisioner: kubernetes.io/azure-disk
-parameters:
-  location: ${LOCATION}
-  storageAccount: ${STORAGEACCOUNT}
-EOF
+# if hostname -f|grep -- "-0" >/dev/null
+# then
+# cat <<EOF > /home/${SUDOUSER}/scunmanaged.yml
+# kind: StorageClass
+# apiVersion: storage.k8s.io/v1
+# metadata:
+#   name: generic
+#   annotations:
+#     storageclass.kubernetes.io/is-default-class: "true"
+# provisioner: kubernetes.io/azure-disk
+# parameters:
+#   location: ${LOCATION}
+#   storageAccount: ${STORAGEACCOUNT}
+# EOF
 
-cat <<EOF > /home/${SUDOUSER}/scmanaged.yml
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: generic
-  annotations:
-    storageclass.kubernetes.io/is-default-class: "true"
-provisioner: kubernetes.io/azure-disk
-parameters:
-  kind: managed
-  location: ${LOCATION}
-  storageaccounttype: Premium_LRS
-EOF
+# cat <<EOF > /home/${SUDOUSER}/scmanaged.yml
+# kind: StorageClass
+# apiVersion: storage.k8s.io/v1
+# metadata:
+#   name: generic
+#   annotations:
+#     storageclass.kubernetes.io/is-default-class: "true"
+# provisioner: kubernetes.io/azure-disk
+# parameters:
+#   kind: managed
+#   location: ${LOCATION}
+#   storageaccounttype: Premium_LRS
+# EOF
 
-fi
+# fi
 
 echo $(date) " - Script Complete"

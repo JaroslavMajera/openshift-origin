@@ -141,9 +141,12 @@ fi
 if [[ $AZURE == "true" ]]
 then
 	export CLOUDKIND="openshift_cloudprovider_kind=azure
-osm_controller_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/origin/cloudprovider/azure.conf']}
-osm_api_server_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/origin/cloudprovider/azure.conf']}
-openshift_node_kubelet_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/origin/cloudprovider/azure.conf'], 'enable-controller-attach-detach': ['true']}"
+openshift_cloudprovider_azure_client_id="$AADCLIENTID"
+openshift_cloudprovider_azure_client_secret="$AADCLIENTSECRET"
+openshift_cloudprovider_azure_tenant_id="$TENANTID"
+openshift_cloudprovider_azure_subscription_id="$SUBSCRIPTIONID"
+openshift_cloudprovider_azure_resource_group="$RESOURCEGROUP"
+openshift_cloudprovider_azure_location="$LOCATION""
 fi
 
 # Setting the aditional registry for OLM
@@ -180,6 +183,9 @@ openshift_master_api_port=443
 openshift_master_console_port=443
 openshift_disable_check=disk_availability,memory_availability,docker_image_availability
 $CLOUDKIND
+
+# Storage Class change to use managed storage
+openshift_storageclass_parameters={'kind': 'managed', 'storageaccounttype': 'Standard_LRS'}
 
 $OLM
 
@@ -271,17 +277,17 @@ runuser -l $SUDOUSER -c "ansible all -b -o -m service -a \"name=NetworkManager s
 echo $(date) " - NetworkManager configuration complete"
 
 # Create /etc/origin/cloudprovider/azure.conf on all hosts if Azure is enabled
-if [[ $AZURE == "true" ]]
-then
-	runuser $SUDOUSER -c "ansible-playbook -f 10 ~/openshift-container-platform-playbooks/create-azure-conf.yaml"
-	if [ $? -eq 0 ]
-	then
-		echo $(date) " - Creation of Cloud Provider Config (azure.conf) completed on all nodes successfully"
-	else
-		echo $(date) " - Creation of Cloud Provider Config (azure.conf) completed on all nodes failed to complete"
-		exit 13
-	fi
-fi
+# if [[ $AZURE == "true" ]]
+# then
+# 	runuser $SUDOUSER -c "ansible-playbook -f 10 ~/openshift-container-platform-playbooks/create-azure-conf.yaml"
+# 	if [ $? -eq 0 ]
+# 	then
+# 		echo $(date) " - Creation of Cloud Provider Config (azure.conf) completed on all nodes successfully"
+# 	else
+# 		echo $(date) " - Creation of Cloud Provider Config (azure.conf) completed on all nodes failed to complete"
+# 		exit 13
+# 	fi
+# fi
 
 # Initiating installation of OpenShift Origin prerequisites using Ansible Playbook
 echo $(date) " - Running Prerequisites via Ansible Playbook"
@@ -319,40 +325,40 @@ echo $(date) "- Configuring Docker Registry to use Azure Storage Account"
 
 runuser $SUDOUSER -c "ansible-playbook -f 10 ~/openshift-container-platform-playbooks/$DOCKERREGISTRYYAML"
 
-if [[ $AZURE == "true" ]]
-then
-	echo $(date) " - Rebooting cluster to complete installation"
-	runuser -l $SUDOUSER -c  "oc label --overwrite nodes $MASTER-0 openshift-infra=apiserver"
-	runuser -l $SUDOUSER -c  "oc label --overwrite nodes --all logging-infra-fluentd=true logging=true"
-	runuser -l $SUDOUSER -c  "ansible localhost -b -o -m service -a 'name=openvswitch state=restarted'"
-	runuser -l $SUDOUSER -c  "ansible localhost -b -o -m service -a 'name=origin-master-api state=restarted'"
-	runuser -l $SUDOUSER -c  "ansible localhost -b -o -m service -a 'name=origin-master-controllers state=restarted'"
-	runuser -l $SUDOUSER -c  "ansible localhost -b -o -m service -a 'name=origin-node state=restarted'"
-	runuser -l $SUDOUSER -c "ansible-playbook -f 10 ~/openshift-container-platform-playbooks/reboot-master-origin.yaml"
-	runuser -l $SUDOUSER -c "ansible-playbook -f 10 ~/openshift-container-platform-playbooks/reboot-nodes.yaml"
+# if [[ $AZURE == "true" ]]
+# then
+# 	echo $(date) " - Rebooting cluster to complete installation"
+# 	runuser -l $SUDOUSER -c  "oc label --overwrite nodes $MASTER-0 openshift-infra=apiserver"
+# 	runuser -l $SUDOUSER -c  "oc label --overwrite nodes --all logging-infra-fluentd=true logging=true"
+# 	runuser -l $SUDOUSER -c  "ansible localhost -b -o -m service -a 'name=openvswitch state=restarted'"
+# 	runuser -l $SUDOUSER -c  "ansible localhost -b -o -m service -a 'name=origin-master-api state=restarted'"
+# 	runuser -l $SUDOUSER -c  "ansible localhost -b -o -m service -a 'name=origin-master-controllers state=restarted'"
+# 	runuser -l $SUDOUSER -c  "ansible localhost -b -o -m service -a 'name=origin-node state=restarted'"
+# 	runuser -l $SUDOUSER -c "ansible-playbook -f 10 ~/openshift-container-platform-playbooks/reboot-master-origin.yaml"
+# 	runuser -l $SUDOUSER -c "ansible-playbook -f 10 ~/openshift-container-platform-playbooks/reboot-nodes.yaml"
 
-	if [ $? -eq 0 ]
-	then
-	   echo $(date) " - Cloud Provider setup of OpenShift Cluster completed successfully"
-	else
-	   echo $(date) "- Cloud Provider setup did not complete"
-	   exit 10
-	fi
+# 	if [ $? -eq 0 ]
+# 	then
+# 	   echo $(date) " - Cloud Provider setup of OpenShift Cluster completed successfully"
+# 	else
+# 	   echo $(date) "- Cloud Provider setup did not complete"
+# 	   exit 10
+# 	fi
 	
-	# Create Storage Class
-	echo $(date) "- Creating Storage Class"
+# 	# Create Storage Class
+# 	echo $(date) "- Creating Storage Class"
 
-	runuser $SUDOUSER -c "ansible-playbook -f 10 ~/openshift-container-platform-playbooks/configurestorageclass.yaml"
-	echo $(date) "- Sleep for 15"
-	sleep 15
+# 	runuser $SUDOUSER -c "ansible-playbook -f 10 ~/openshift-container-platform-playbooks/configurestorageclass.yaml"
+# 	echo $(date) "- Sleep for 15"
+# 	sleep 15
 	
-	# Installing Service Catalog, Ansible Service Broker and Template Service Broker
+# 	# Installing Service Catalog, Ansible Service Broker and Template Service Broker
 	
-	echo $(date) "- Installing Service Catalog, Ansible Service Broker and Template Service Broker"
-	runuser -l $SUDOUSER -c "ansible-playbook -f 10 /home/$SUDOUSER/openshift-ansible/playbooks/openshift-service-catalog/config.yml"
-	echo $(date) "- Service Catalog, Ansible Service Broker and Template Service Broker installed successfully"
+# 	echo $(date) "- Installing Service Catalog, Ansible Service Broker and Template Service Broker"
+# 	runuser -l $SUDOUSER -c "ansible-playbook -f 10 /home/$SUDOUSER/openshift-ansible/playbooks/openshift-service-catalog/config.yml"
+# 	echo $(date) "- Service Catalog, Ansible Service Broker and Template Service Broker installed successfully"
 	
-fi
+# fi
 
 # Configure Metrics
 
