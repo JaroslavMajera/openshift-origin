@@ -314,16 +314,16 @@
 				"skuTier": "[variables('vmSizesMap')[parameters('nodeVmSize')].storageAccountTier]"
 			},
 			"diagnostics": {
-				"skuName": "Premium_LRS",
-				"skuTier": "Premium"
+				"skuName": "Standard_LRS",
+				"skuTier": "Standard"
 			},
 			"registry": {
-				"skuName": "Premium_LRS",
-				"skuTier": "Premium"
+				"skuName": "Standard_LRS",
+				"skuTier": "Standard"
 			},
 			"persistent": {
-				"skuName": "Premium_LRS",
-				"skuTier": "Premium"
+				"skuName": "Standard_LRS",
+				"skuTier": "Standard"
 			}
 		},
 		"managedStorageCount": 3,
